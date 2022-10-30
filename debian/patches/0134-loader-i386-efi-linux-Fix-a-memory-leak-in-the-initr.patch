@@ -1,0 +1,72 @@
+From: Chris Coulson <chris.coulson@canonical.com>
+Date: Tue, 3 May 2022 09:47:35 +0200
+Subject: loader/i386/efi/linux: Fix a memory leak in the initrd command
+
+Subsequent invocations of the initrd command result in the previous
+initrd being leaked, so fix that.
+
+Signed-off-by: Chris Coulson <chris.coulson@canonical.com>
+(cherry picked from commit d98af31ce1e31bb22163960d53f5eb28c66582a0)
+---
+ grub-core/loader/i386/efi/linux.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/grub-core/loader/i386/efi/linux.c b/grub-core/loader/i386/efi/linux.c
+index cfe1096..639e84a 100644
+--- a/grub-core/loader/i386/efi/linux.c
++++ b/grub-core/loader/i386/efi/linux.c
+@@ -95,6 +95,7 @@ grub_cmd_initrd (grub_command_t cmd, int argc, char *argv[])
+   grub_uint8_t *ptr;
+   struct grub_linuxefi_context *context = (struct grub_linuxefi_context *) cmd->data;
+   struct linux_kernel_params *params;
++  void *initrd_mem = 0;
+ 
+   if (argc == 0)
+     {
+@@ -127,9 +128,9 @@ grub_cmd_initrd (grub_command_t cmd, int argc, char *argv[])
+ 	}
+     }
+ 
+-  context->initrd_mem = grub_efi_allocate_pages_max (0x3fffffff, BYTES_TO_PAGES(size));
++  initrd_mem = grub_efi_allocate_pages_max (0x3fffffff, BYTES_TO_PAGES(size));
+ 
+-  if (context->initrd_mem == NULL)
++  if (initrd_mem == NULL)
+     {
+       grub_error (GRUB_ERR_OUT_OF_MEMORY, N_("can't allocate initrd"));
+       goto fail;
+@@ -138,9 +139,9 @@ grub_cmd_initrd (grub_command_t cmd, int argc, char *argv[])
+   grub_dprintf ("linuxefi", "initrd_mem = %lx\n", (unsigned long) context->initrd_mem);
+ 
+   params->ramdisk_size = size;
+-  params->ramdisk_image = (grub_uint32_t)(grub_addr_t) context->initrd_mem;
++  params->ramdisk_image = (grub_uint32_t)(grub_addr_t) initrd_mem;
+ 
+-  ptr = context->initrd_mem;
++  ptr = initrd_mem;
+ 
+   for (i = 0; i < nfiles; i++)
+     {
+@@ -157,6 +158,11 @@ grub_cmd_initrd (grub_command_t cmd, int argc, char *argv[])
+       ptr += ALIGN_UP_OVERHEAD (cursize, 4);
+     }
+ 
++  if (context->initrd_mem)
++    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)context->initrd_mem,
++			 BYTES_TO_PAGES(params->ramdisk_size));
++
++  context->initrd_mem = initrd_mem;
+   params->ramdisk_size = size;
+ 
+  fail:
+@@ -164,8 +170,8 @@ grub_cmd_initrd (grub_command_t cmd, int argc, char *argv[])
+     grub_file_close (files[i]);
+   grub_free (files);
+ 
+-  if (context->initrd_mem && grub_errno)
+-    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)context->initrd_mem,
++  if (initrd_mem && grub_errno)
++    grub_efi_free_pages ((grub_efi_physical_address_t)(grub_addr_t)initrd_mem,
+ 			 BYTES_TO_PAGES(size));
+ 
+   return grub_errno;
