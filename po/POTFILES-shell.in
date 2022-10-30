@@ -9,6 +9,7 @@ util/grub.d/10_hurd.in
 util/grub.d/10_illumos.in
 util/grub.d/10_kfreebsd.in
 util/grub.d/10_linux.in
+util/grub.d/10_linux_zfs.in
 util/grub.d/10_netbsd.in
 util/grub.d/10_windows.in
 util/grub.d/10_xnu.in

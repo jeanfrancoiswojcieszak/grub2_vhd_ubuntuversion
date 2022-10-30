@@ -32,6 +32,8 @@ enum grub_file_type
     GRUB_FILE_TYPE_GRUB_MODULE,
     /* Loopback file to be represented as disk.  */
     GRUB_FILE_TYPE_LOOPBACK,
+    /* Vhd file to be represented as disk.  */
+    GRUB_FILE_TYPE_VHD,
     /* Linux kernel to be loaded.  */
     GRUB_FILE_TYPE_LINUX_KERNEL,
     /* Linux initrd.  */
