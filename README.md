@@ -29,6 +29,19 @@ see:
 
   info grub Introduction 'Changes from GRUB Legacy'
   
+  Compilation on ubuntu 22.04:
+  
+  ```apt install build-essentials automake autopoint bison flex```
+  
+  ```./autonconf.sh```
+  
+  ```./configure --with-platform=efi --target=x86_64 --disable-werror```
+  
+  ```make```
+  
+  ```make install```
+  
+  
   Example usage:
   
   after booting into grub:
