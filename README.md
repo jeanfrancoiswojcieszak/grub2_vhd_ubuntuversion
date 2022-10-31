@@ -50,7 +50,7 @@ see:
   
   ```insmod vhd```
   
-  ```vhd vhd0 test.vhd```
+  ```vhd vhd0 (hd0,msdos2)/test.vhd```
   
   ```ls (vhd0,msdos1)/ ```
   
