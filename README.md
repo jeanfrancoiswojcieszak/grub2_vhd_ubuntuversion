@@ -46,6 +46,8 @@ see:
   
   after booting into grub:
   
+  ```insmod part_msdos```
+  
   ```insmod vhd```
   
   ```vhd vhd0 test.vhd```
