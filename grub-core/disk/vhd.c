@@ -216,13 +216,13 @@ grub_vhd_read (grub_disk_t disk, grub_disk_addr_t sector,
 
   grub_uint32_t density=(grub_swap_bytes32(dynheader.blocsize))>>9;
   grub_uint64_t offsetbloc;
-  long long unsigned int nb_bloc=grub_divmod64(sector,density,&offsetbloc);
+  grub_uint64_t nb_bloc=grub_divmod64(sector,density,&offsetbloc);
 
   grub_file_seek (file,grub_swap_bytes64(dynheader.BAT)+(nb_bloc<<2));
   grub_uint32_t blocpos;
   grub_file_read(file,&blocpos,sizeof(blocpos));
 
-  long long unsigned int finalpos=(long long unsigned int)((grub_swap_bytes32(blocpos)+1+offsetbloc)<<9);
+  grub_uint64_t finalpos=(grub_uint64_t)((grub_swap_bytes32(blocpos)+1+offsetbloc)<<9);
 
   grub_file_seek (file,finalpos);
 
