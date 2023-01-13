@@ -31,7 +31,7 @@ see:
   
   Compilation on ubuntu 22.04:
   
-  ```apt install build-essentials automake autopoint bison flex```
+  ```sudo apt install build-essential automake autopoint bison flex```
   
   ```./autonconf.sh```
   
