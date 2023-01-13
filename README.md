@@ -33,22 +33,42 @@ see:
   
   ```sudo apt install build-essential automake autopoint bison flex```
   
-  ```./autonconf.sh```
+  ```./autogen.sh```
   
   ```./configure --with-platform=efi --target=x86_64 --disable-werror```
   
   ```make```
   
-  ```make install```
-  
+  ```sudo make install```
   
   Example usage:
   
+  to create an efi app with grub:
+  
+  ```nano grub.cfg```
+
+  type:
+
+```
+  insmod all_video
+     insmod part_msdos
+     insmod part_gpt
+     insmod ntfs
+     insmod ext2
+     insmod vhd
+```
+
+quit and save, then:
+    
+
+```
+./grub-mkstandalone -O x86_64-efi --modules="part_gpt part_msdos all_video ntfs ext2 vhd" -o "grub-standalone.efi" "boot/grub/grub.cfg=grub.cfg" -v
+```    
+ 
+ 
+  you can now boot on grub-standalone.efi
+  
   after booting into grub:
-  
-  ```insmod part_msdos```
-  
-  ```insmod vhd```
   
   ```vhd vhd0 (hd0,msdos2)/test.vhd```
   
